@@ -1,0 +1,20 @@
+ul.navbar {
+    position: absolute;
+    top: 2em;
+    left: 1em;
+    width: 9em }
+h1 {
+    font-family: Helvetica, Geneva, Arial,
+          SunSans-Regular, sans-serif }
+a {
+	text-decoration:none;
+	color: black;
+    font-family: Helvetica, Geneva, Arial,
+          SunSans-Regular, sans-serif
+}
+a:hover{
+	text-decoration:none;
+	color: gray;
+    font-family: Helvetica, Geneva, Arial,
+          SunSans-Regular, sans-serif
+}
