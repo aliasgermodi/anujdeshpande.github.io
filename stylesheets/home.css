@@ -3,18 +3,21 @@ ul.navbar {
     top: 2em;
     left: 1em;
     width: 9em }
-h1 {
+h1,h4,h2 {
     font-family: Helvetica, Geneva, Arial,
           SunSans-Regular, sans-serif }
 a {
-	text-decoration:none;
-	color: black;
+	color: #808080;
     font-family: Helvetica, Geneva, Arial,
           SunSans-Regular, sans-serif
 }
 a:hover{
 	text-decoration:none;
 	color: gray;
+    font-family: Helvetica, Geneva, Arial,
+          SunSans-Regular, sans-serif
+}
+p {
     font-family: Helvetica, Geneva, Arial,
           SunSans-Regular, sans-serif
 }
