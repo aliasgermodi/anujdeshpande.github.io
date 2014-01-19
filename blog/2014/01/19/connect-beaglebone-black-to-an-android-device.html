@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<title>connect-beaglebone-black-to-an-android-device.html</title>
+
+</head>
+
+<body>
+
+<p><em>19th January '14</em></p>
+
+<p>Some of the methods that I think can be used to setup duplex communication between an Android application and a Beaglebone Black. </p>
+
+<ol>
+<li><p>Android uses the mtp filesystem. You can setup libmtpfs and mtptools on your BeagleBone Black. Then connect the Android device to the USB host port of BBB, mount the Android filesystem in Angstrom and read/write on files there. 
+Problem with this method is there is no recipe for libmtp in the Angstrom kernel tree <a href="https://github.com/Angstrom-distribution/meta-oe">here</a>
+OpenEmbedded has support for mtp <a href="https://github.com/openembedded/meta-oe/tree/41748a4afc494b714315ba529f138214f80d41b9/meta-oe/recipes-connectivity/libmtp">here</a>. So it <em>might</em> not be a difficult thing to get mtp to play along with a BBB.</p></li>
+<li><p>Android has the AOA protocol(Android Open Accessory Protocol). It basically allows one to connect an Android device to an Arduino. Look at <a href="http://developer.android.com/tools/adk/index.html">ADK</a>
+Rowboat project has <a href="http://code.google.com/p/rowboat/wiki/AccessoryDevKit">implemented the protocol</a> for the BeagleBone. According to me there isn't any difference between BBB and BeagleBone White when it comes to this, but I was unsuccessful while getting the rowboat project to work on the Black. </p></li>
+<li><p>Bluetooth : You could attach a USB dongle like <a href="http://www.adafruit.com/products/1327">this</a> to your BBB. bluez on Linux allows you to pair devices too.  </p></li>
+<li><p>Similar to method number 1, we have a protocol called PTP (Picture Transfer Protocol). PTP makes your Android device appear as a camera. <a href="http://developer.android.com/reference/android/mtp/package-summary.html">PTP is a subset of MTP</a> .  I was able to use gphoto2, a tool based on PTP, to get and put files on an Android device connected to the Beaglebone Black.  </p></li>
+</ol>
+
+<p>Basic outline is as follows :  </p>
+
+<pre><code>opkg update
+opkg install libusb-@-dev #Replace @ with the latest version number
+</code></pre>
+
+<p>libusb comes pre installed with Angstrom. We need the -dev version to build libgphoto2 and gphoto2.  </p>
+
+<p>Next fetch the tars available on the sourceforge pages</p>
+
+<ul>
+<li><a href="http://sourceforge.net/projects/gphoto/files/">libgphoto2</a></li>
+<li><a href="http://sourceforge.net/projects/gphoto/files/gphoto/">gphoto2</a> (Look at the links at the bottom of the page)  </li>
+</ul>
+
+<p>Untar both the files, and run the following commands in each.</p>
+
+<pre><code>./configure
+make
+make install
+</code></pre>
+
+<p>First install, libgphoto, followed by the gphoto tool.
+Now you should be able to use gphoto2 tool from the command line on the beaglebone black. <br />
+Next we look at some of the commonly used options with gphoto2.</p>
+
+<ul>
+<li><p>--list-ports <br />
+If you installed libusb correctly, running gphoto2 with this option will show you 6 results. We are interested in the one that reads USB.</p></li>
+<li><p>--auto-detect <br />
+This will detect the cameras (in our case the Android device), that's connected to the beagle. It will show it's model number.</p></li>
+<li><p>--list-files <br />
+This will list all the files that are present on the mounted device.</p></li>
+</ul>
+
+<p>A comprehensive list can be found at the <a href="http://www.gphoto.org/doc/manual/ref-gphoto2-cli.html">man page</a>. <br />
+This neat setup should help in a lot of projects that I have in mind :)</p>
+
+<h4>- Anuj Deshpande</h4>
+
+</body>
+</html>
