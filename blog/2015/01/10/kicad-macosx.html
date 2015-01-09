@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>kicad-macosx</title>
+  <link rel="stylesheet" href="../../../css/blog1.css" /> 
+  <link rel="stylesheet" href="../../../css/blog.css" />
+  <style>
+    /* Page tweaks */
+    .preview-page {
+      margin-top: 64px;
+    }
+    /* Discussion tweaks */
+    .discussion-timeline.wide {
+      width: 920px;
+    }
+    .timeline-comment-wrapper > .timeline-comment:after,
+    .timeline-comment-wrapper > .timeline-comment:before {
+      content: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="preview-page">
+    <div class="container">
+      <div class="repository-with-sidebar repo-container with-full-navigation">
+
+        
+          <div class="discussion-timeline ">
+            <div class="timeline-comment-wrapper">
+              <div class="timeline-comment">
+                <div class="comment">
+                  <div class="comment-content">
+                    <div class="comment-body markdown-body markdown-format">
+                      <h1>KiCad on Mac OS X 10.10</h1>
+
+<p>EDA stands for electronic design automation. It consists of a set of tools which are part of a workflow for designing integrated circuits and PCBs. Tools for design as well as analysis exist in a suite. <br>
+Some of the industrial standards are OrCAD from Cadence,<br>
+Altium, Eagle from CadSoft, etc. None of them are open source, nor are<br>
+they free. They either have a freemium model or a free trial thing<br>
+going on. Not suitable for doing Open Hardware at all.<br><br>
+KiCad is an open source (GNU GPL v2) EDA tool which recently has<br>
+gained momentum (again). It's not up to the mark as the above<br>
+tools. Eagle has found a sweet spot in the maker movement because it<br>
+offers a hobby version. CERN has taken an interest in taking the<br>
+development forward for KiCad and hopefully this'll add more<br>
+functionality and make it a de facto standard.  </p>
+
+<p>In this tutorial I am going to show how to install it from the source<br>
+on a Mac OS X. It's a bit tricky as there is no official .dmg<br>
+available (there are some old binaries available, but nothing worth<br>
+checking out).<br><br>
+KiCad devs use GNU Bazaar for version control. It's similar to git. So<br>
+we are going to install some dependencies before getting the source<br>
+code from launchpad.</p>
+
+<pre><code>brew install glew bzr cmake
+</code></pre>
+
+<p>You also need Xcode tools installed. You can do that from the App<br>
+Store app.</p>
+
+<pre><code>mkdir KiCad
+bzr branch lp:kicad
+wget https://sourceforge.net/projects/wxwindows/files/3.0.2/wxWidgets-3.0.2.tar.bz2
+</code></pre>
+
+<p>Uncompress the downloaded archive</p>
+
+<pre><code>mv wxWidgets-3.0.2 wx-src
+nano wx-src/src/osx/webview_webkit.mm
+</code></pre>
+
+<p>Change the following line<br>
+    #include <br>
+to</p>
+
+<pre><code>#include &lt;WebKit/WebKitLegacy.h&gt;
+</code></pre>
+
+<p>Now run the following :</p>
+
+<pre><code>kicad/scripts/osx_build_wx.sh wx-src wx-bin kicad 10.10 "-j4"
+</code></pre>
+
+<p>In case the file isn't executable go to the above directory and</p>
+
+<pre><code>chmod +x osx_build_wx.sh
+</code></pre>
+
+<p>This will install wxWidgets for you. Next let's create a build<br>
+directory for building the latest code base.</p>
+
+<pre><code>mkdir build
+cd build
+cmake ../kicad \
+  -DCMAKE_C_COMPILER=clang \
+  -DCMAKE_CXX_COMPILER=clang++ \
+  -DCMAKE_OSX_DEPLOYMENT_TARGET=10.10 \
+  -DwxWidgets_CONFIG_EXECUTABLE=../wx-bin/bin/wx-config \
+  -DKICAD_SCRIPTING=OFF \
+  -DKICAD_SCRIPTING_MODULES=OFF \
+  -DKICAD_SCRIPTING_WXPYTHON=OFF \
+  -DCMAKE_INSTALL_PREFIX=../bin \
+  -DCMAKE_BUILD_TYPE=Release
+
+make
+make install
+</code></pre>
+
+<p>Now your directory structure should look something like the<br>
+following :</p>
+
+<pre><code>➜  KiCad  ls -lah
+total 39424
+drwxr-xr-x   9 anuj  staff   306B Jan  9 21:05 .
+drwxr-xr-x  13 anuj  staff   442B Jan  9 18:24 ..
+-rw-r--r--@  1 anuj  staff   6.0K Jan  9 19:04 .DS_Store
+drwxr-xr-x  13 anuj  staff   442B Jan 10 00:00 bin
+drwxr-xr-x  30 anuj  staff   1.0K Jan  9 21:05 build
+drwxr-xr-x  50 anuj  staff   1.7K Jan  9 20:21 kicad
+drwxr-xr-x   6 anuj  staff   204B Jan  9 20:12 wx-bin
+drwxr-xr-x@ 38 anuj  staff   1.3K Jan  9 19:19 wx-src
+-rw-r--r--   1 anuj  staff    19M Oct  7 03:12  wxWidgets-3.0.2.tar.bz2
+</code></pre>
+
+<p>Your KiCad binaries will in the bin/ directory.</p>
+
+<pre><code>➜  bin  ls -lah
+total 64
+drwxr-xr-x  13 anuj  staff   442B Jan 10 00:00 .
+drwxr-xr-x   9 anuj  staff   306B Jan  9 21:05 ..
+lrwxr-xr-x   1 anuj  staff    52B Jan  9 21:05 bitmap2component.app -&gt; kicad.app/Contents/Applications/bitmap2component.app
+lrwxr-xr-x   1 anuj  staff    41B Jan  9 21:05 cvpcb.app -&gt; kicad.app/Contents/Applications/cvpcb.app
+drwxr-xr-x  14 anuj  staff   476B Jan  9 21:05 demos
+drwxr-xr-x   4 anuj  staff   136B Jan  9 21:05 doc
+lrwxr-xr-x   1 anuj  staff    44B Jan  9 21:05 eeschema.app -&gt; kicad.app/Contents/Applications/eeschema.app
+lrwxr-xr-x   1 anuj  staff    44B Jan  9 21:05 gerbview.app -&gt; kicad.app/Contents/Applications/gerbview.app
+drwxr-xr-x   3 anuj  staff   102B Jan  9 21:05 kicad.app
+-rw-r--r--   1 anuj  staff   1.3K Jan 10 00:00 noname.pro
+lrwxr-xr-x   1 anuj  staff    50B Jan  9 21:05 pcb_calculator.app -&gt; kicad.app/Contents/Applications/pcb_calculator.app
+lrwxr-xr-x   1 anuj  staff    42B Jan  9 21:05 pcbnew.app -&gt; kicad.app/Contents/Applications/pcbnew.app
+lrwxr-xr-x   1 anuj  staff    45B Jan  9 21:05 pl_editor.app -&gt; kicad.app/Contents/Applications/pl_editor.app
+</code></pre>
+
+<p>One of the interesting things that you can do with KiCad is<br>
+python scripting. In the above steps I haven't mentioned how to build to<br>
+enable scripting but that's definitely something one should check out<br>
+once you get the hang of KiCad.<br><br>
+Chris Gammell of Contextual Electronics (one half of the<br>
+<a href="http://www.theamphour.com/">Amp Hour</a> podcast) has a nice YouTube<br>
+series on getting started with PCB design using KiCad. It's definitely<br>
+a great point for getting to know the nitty gritties of this fantastic<br>
+open source tool.  </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        
+
+      </div>
+    </div>
+  </div>
+  <div>&nbsp;</div>
+  </div><script>
+    function showCanonicalImages() {
+      var images = document.getElementsByTagName('img');
+      if (!images) {
+        return;
+      }
+      for (var index = 0; index < images.length; index++) {
+        var image = images[index];
+        if (image.getAttribute('data-canonical-src')) {
+          image.src = image.getAttribute('data-canonical-src');
+        }
+      }
+    }
+    function scrollToHash() {
+      if (location.hash && !document.querySelector(":target")) {
+        var elements = document.getElementsByName('user-content-' + location.hash.slice(1));
+        if (elements.length > 0) {
+          elements[elements.length - 1].scrollIntoView();
+        }
+      }
+    }
+    window.onhashchange = function() {
+      scrollToHash();
+    }
+    window.onload = function() {
+      scrollToHash();
+    }
+    showCanonicalImages();
+  </script>
+</body>
+</html>
